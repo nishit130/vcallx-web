@@ -1,0 +1,61 @@
+.localVideo{
+    height: 500px;
+    margin: 30px;
+    width: 500px;
+    border: 2px solid pink;
+    background-color: black;
+}
+.remoteVideo{
+    height: 500px;
+    width: 500px;
+    border: 2px solid pink;
+    background-color: black;
+}
+.videoView{
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.page{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    height:100%;
+    /* background-image: url(../src/background.png); */
+    background-color: black;
+}
+.heading{
+    margin-top:50px;
+    color:white;
+}
+.btn{
+    margin: 20px;
+    display: inline;
+    background-color: transparent;
+    font-size: 30px;
+    border: 2px solid pink;
+    border-radius: 30px;
+    color: pink;
+}
+.btn:hover{
+    margin: 20px;
+    display: inline;
+    color: white;
+    background-color: black;
+    font-size: 30px;
+    border: 2px solid white;
+    border-radius: 30px;
+}
+.inputArea{
+    font-size: 30px;
+    border-radius: 30px;
+}
+#password{
+    font-size: 30px;
+    color: pink;
+}

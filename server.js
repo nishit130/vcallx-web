@@ -1,4 +1,5 @@
-const express =  require('express')
+const express =  require('express');
+const { Console } = require('console');
 var app     = express();
 var server  = require('http').createServer(app);
 var io      = require('socket.io').listen(server);
@@ -49,6 +50,15 @@ peers.on('connection', socket => {
             if(socketID !== data.socketID){
                 console.log(socketID,data.payload)
                 socket.emit('candidate',data.payload)
+            }
+        }
+    })
+
+    socket.on('password', (data) => {
+        for(const [socketID,socket] of connectedPeers.entries()){
+            if(socketID !== data.socketID){
+                console.log(socketID,data.payload)
+                socket.emit('password',data.payload)
             }
         }
     })
