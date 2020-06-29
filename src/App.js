@@ -19,13 +19,14 @@ class App extends Component{
   }
   componentDidMount(){
 
-    this.socket = io(
+     this.socket = io(
       '/webrtcPeer',
       {
         part: '/vcallx-web',
         query: {}
       }
     )
+
 
     this.socket.on('connection-success', success => {
       console.log("success",success)
@@ -42,29 +43,78 @@ class App extends Component{
       //this.candidates = [...this.candidates, candidate]
       this.pc.addIceCandidate(new RTCIceCandidate(candidate))
     })
-
-    // const pc_config = null
+    this.socket.on('disconnect-call',(data) => {
+      this.disconnect();
+    })
     this.createPc();
-    
-    this.pc.onicecandidate = (e) => {
-      // if(e.candidate) console.log(JSON.stringify(e.candidate))
-
-      if(e.candidate){
-        this.sendToPeer('candidate', e.candidate)
-      }
-    }
-
-    this.pc.oniceconnectionstatechange = (e) => {
-      console.log(e)
-    }
-
-    this.pc.ontrack = (e) => {
-      console.log("remote srcObject", e.streams[0])
-      this.remoteVideoref.current.srcObject = e.streams[0]
-    }
-    this.setLocalVideo();
   }
-    makeid(length) {
+    
+  //   // const pc_config = null
+  //   this.createPc();
+    
+  //   // this.pc.onicecandidate = (e) => {
+  //   //   // if(e.candidate) console.log(JSON.stringify(e.candidate))
+
+  //   //   if(e.candidate){
+  //   //     this.sendToPeer('candidate', e.candidate)
+  //   //   }
+  //   // }
+
+  //   // this.pc.oniceconnectionstatechange = (e) => {
+  //   //   console.log(e)
+  //   // }
+
+  //   // this.pc.ontrack = (e) => {
+  //   //   console.log("remote srcObject", e.streams[0])
+  //   //   this.remoteVideoref.current.srcObject = e.streams[0]
+  //   // }
+  //   //this.setLocalVideo();
+  // }
+   
+
+  handleICEcandidateEvent = (e) => {
+    if(e.candidate){
+      this.sendToPeer('candidate', e.candidate)
+    }
+  }
+
+  handleTrackEvent = (e) => {
+    this.remoteVideoref.current.srcObject = e.streams[0]
+  }
+
+  // handleNegotiationNeededEvent = () => {
+  //   this.pc.createOffer().then((offer) => {
+  //     return this.pc.setLocalDescription(offer);
+  //   }).then(() => {
+  //     this.sendToPeer('offerOrAnswer',this.pc.localDescription)
+  //   })
+  // }
+  createPc = () => {
+    const pc_config = {
+      "iceServers": [
+        {
+          urls : 'stun:stun.l.google.com:19302'
+        },
+        {
+          urls: 'turn:numb.viagenie.ca',
+          credential: process.env.REACT_APP_TURN_CREDINTIAL,
+          username: process.env.REACT_APP_TURN_USERNAME
+        },
+      ]
+    }
+    this.pc = new RTCPeerConnection(pc_config)
+    this.pc.onicecandidate = this.handleICEcandidateEvent;
+    this.pc.ontrack = this.handleTrackEvent;
+    this.setLocalVideo();
+
+  }
+
+
+
+
+
+
+  makeid(length) {
     var result           = '';
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
@@ -92,21 +142,7 @@ class App extends Component{
       payload
     })
   }
-  createPc = () => {
-    const pc_config = {
-      "iceServers": [
-        {
-          urls : 'stun:stun.l.google.com:19302'
-        },
-        {
-          urls: 'turn:numb.viagenie.ca',
-          credential: process.env.REACT_APP_TURN_CREDINTIAL,
-          username: process.env.REACT_APP_TURN_USERNAME
-        },
-      ]
-    }
-    this.pc = new RTCPeerConnection(pc_config)
-  }
+  
   createOffer = () => {
     console.log('offer')
     if(!this.pc)
@@ -126,11 +162,6 @@ class App extends Component{
     })
     console.log("pass: ",this.state.password_client)
   }
-  // setRemoteDescription = () => {
-  //   //const desc = JSON.parse(this.textref.value)
-  //   this.pc.setRemoteDescription(new RTCSessionDescription(desc)).then(() => console.log("remote descp added"))
-    
-  // }
 
   createAnswer = () => {
     console.log("caller pass: ",this.password)
@@ -154,9 +185,12 @@ class App extends Component{
     }
   }
   disconnect = () => {
-    //this.sendToPeer('disconnect',)
-    this.localVideoref.current.srcObject.getTracks().forEach(track => track.stop())
-    this.localVideoref.current.srcObject = null
+    this.sendToPeer('disconnect-call','')
+    if(this.localVideoref)
+    {
+      this.localVideoref.current.srcObject.getTracks().forEach(track => track.stop())
+      this.localVideoref.current.srcObject = null
+    }
     if(this.remoteVideoref) {
       this.remoteVideoref.current.srcObject.getTracks().forEach(track => track.stop())
       this.remoteVideoref.current.srcObject = null

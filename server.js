@@ -61,4 +61,13 @@ peers.on('connection', socket => {
             }
         }
     })
+
+    socket.on('disconnect-call', (data) => {
+        for(const [socketID,socket] of connectedPeers.entries()){
+            if(socketID !== data.socketID){
+                console.log(socketID,data.payload)
+                socket.emit('disconnect-call',data.payload)
+            }
+        }
+    })
 })
