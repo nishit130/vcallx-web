@@ -26,6 +26,8 @@
     justify-content: center;
     background-size: cover;
     height:100%;
+    width: 100%;
+    padding-bottom: 110px;
     /* background-image: url(../src/background.png); */
     background-color: black;
 }
@@ -37,7 +39,7 @@
     margin: 20px;
     display: inline;
     background-color: transparent;
-    font-size: 30px;
+    font-size: 25px;
     border: 2px solid pink;
     border-radius: 30px;
     color: pink;
@@ -47,7 +49,7 @@
     display: inline;
     color: white;
     background-color: black;
-    font-size: 30px;
+    font-size: 25px;
     border: 2px solid white;
     border-radius: 30px;
 }

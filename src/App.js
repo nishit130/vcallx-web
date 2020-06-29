@@ -44,20 +44,8 @@ class App extends Component{
     })
 
     // const pc_config = null
-    const pc_config = {
-      "iceServers": [
-        {
-          urls : 'stun:stun.l.google.com:19302'
-        },
-        {
-          urls: 'turn:numb.viagenie.ca',
-          credential: process.env.REACT_APP_TURN_CREDINTIAL,
-          username: process.env.REACT_APP_TURN_USERNAME
-        },
-      ]
-    }
-
-    this.pc = new RTCPeerConnection(pc_config)
+    this.createPc();
+    
     this.pc.onicecandidate = (e) => {
       // if(e.candidate) console.log(JSON.stringify(e.candidate))
 
@@ -74,6 +62,18 @@ class App extends Component{
       console.log("remote srcObject", e.streams[0])
       this.remoteVideoref.current.srcObject = e.streams[0]
     }
+    this.setLocalVideo();
+  }
+    makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+  setLocalVideo = () => {
     const constraints = {
       video : true,
       //audio: true,
@@ -86,26 +86,35 @@ class App extends Component{
       console.log("Stream Error: ",streamError)
     })
   }
-    makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  }
- 
   sendToPeer = (messageType, payload) => {
     this.socket.emit(messageType, {
       socketID : this.socket.id,
       payload
     })
   }
-
+  createPc = () => {
+    const pc_config = {
+      "iceServers": [
+        {
+          urls : 'stun:stun.l.google.com:19302'
+        },
+        {
+          urls: 'turn:numb.viagenie.ca',
+          credential: process.env.REACT_APP_TURN_CREDINTIAL,
+          username: process.env.REACT_APP_TURN_USERNAME
+        },
+      ]
+    }
+    this.pc = new RTCPeerConnection(pc_config)
+  }
   createOffer = () => {
     console.log('offer')
-    this.pc.createOffer({offerToReceiveVideo:1}).then(sdp => {
+    if(!this.pc)
+    {
+      this.createPc();
+      this.setLocalVideo();
+    }
+    this.pc.createOffer({offerToReceiveVideo:1,iceRestart: true}).then(sdp => {
       // console.log(JSON.stringify(sdp))
       this.pc.setLocalDescription(sdp).then(() => console.log("local descp added"))
       this.sendToPeer('offerOrAnswer', sdp)
@@ -124,10 +133,16 @@ class App extends Component{
   // }
 
   createAnswer = () => {
+    console.log("caller pass: ",this.password)
+    if(!this.pc)
+    {
+      this.createPc();
+      this.setLocalVideo();
+    }
     if(this.password === this.textref)
     {
       console.log("Answer")
-      this.pc.createAnswer({offerToReceiveVideo: 1, offerToReceiveAudio: 1}).then(sdp => {
+      this.pc.createAnswer({offerToReceiveVideo: 1, offerToReceiveAudio: 1,iceRestart:true}).then(sdp => {
         // console.log(JSON.stringify(sdp)
         this.sendToPeer('offerOrAnswer', sdp)
 
@@ -137,6 +152,24 @@ class App extends Component{
     else{
       console.log("pass dint matchn you entered", this.textref)
     }
+  }
+  disconnect = () => {
+    //this.sendToPeer('disconnect',)
+    this.localVideoref.current.srcObject.getTracks().forEach(track => track.stop())
+    this.localVideoref.current.srcObject = null
+    if(this.remoteVideoref) {
+      this.remoteVideoref.current.srcObject.getTracks().forEach(track => track.stop())
+      this.remoteVideoref.current.srcObject = null
+    }
+    if(this.pc)
+    {
+      this.pc.ontrack = null;
+      this.pc.onicecandidate = null;
+      this.pc.close();
+      this.pc = null;
+    }
+    this.setLocalVideo();
+    this.createPc();
   }
   
   // addCandidate = () => {
@@ -168,6 +201,7 @@ class App extends Component{
       <div>
         <button className="btn" onClick={this.createOffer}>Make Call</button>
         <button className="btn" onClick={this.createAnswer}>Connect to Call</button>
+        <button className="btn" onClick={this.disconnect}>diconnect to Call</button>
       </div>
       {/* <button onClick={this.setRemoteDescription}>set Remote Description</button>
       <button onClick={this.addCandidate}>Add candidate</button> */}

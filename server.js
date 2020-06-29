@@ -42,7 +42,6 @@ peers.on('connection', socket => {
             }
         }
     })
-
     socket.on('candidate', (data) => {
         // send to the oter peers if any
         for (const [socketID, socket] of connectedPeers.entries()){
