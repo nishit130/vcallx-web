@@ -17,13 +17,13 @@ class App extends Component{
           query: {}
         }
        ),
+       login : true,
     }
     this.candidates = []
     this.password = ''
     this.textref = ''
-    this.login = true;
+    this.caller = ''
     this.reciver = ''
-    // this.setState({
       
   }
   componentDidMount(){
@@ -33,9 +33,9 @@ class App extends Component{
       console.log("success",success)
     })
     this.state.socket.on('offerOrAnswer', (username,sdp) => {
-      //this.textref.value = JSON.stringify(sdp)
-      //alert(`${username} is trying to call you`);
-      console.log("sdp recived! ",username);
+      this.caller = username;
+      alert(username + ' is calling you!')
+      console.log("sdp recived from  ",username);
       this.pc.setRemoteDescription(new RTCSessionDescription(sdp))
     })
     this.state.socket.on('password',(password) => {
@@ -51,32 +51,10 @@ class App extends Component{
     })
     this.createPc();
   }
-    
-  //   // const pc_config = null
-  //   this.createPc();
-    
-  //   // this.pc.onicecandidate = (e) => {
-  //   //   // if(e.candidate) console.log(JSON.stringify(e.candidate))
-
-  //   //   if(e.candidate){
-  //   //     this.sendToPeer('candidate', e.candidate)
-  //   //   }
-  //   // }
-
-  //   // this.pc.oniceconnectionstatechange = (e) => {
-  //   //   console.log(e)
-  //   // }
-
-  //   // this.pc.ontrack = (e) => {
-  //   //   console.log("remote srcObject", e.streams[0])
-  //   //   this.remoteVideoref.current.srcObject = e.streams[0]
-  //   // }
-  //   //this.setLocalVideo();
-  // }
   
   handleiceState = (e) => {
     	console.log('ice state ',this.pc.iceConnectionState)
-    	if(this.pc.iceConnectionState == 'disconnected')
+    	if(this.pc.iceConnectionState === 'disconnected')
     	{
 		this.disconnect();
 		this.sendToPeer('disconnect-call','');
@@ -148,13 +126,14 @@ class App extends Component{
       console.log("Stream Error: ",streamError)
     })
   }
-  sendToPeer = (messageType, payload) => {
+  sendToPeer = (messageType, payload,username) => {
     if(messageType === 'offerOrAnswer')
     {
       console.log('reciver:',this.reciver);
       this.state.socket.emit(messageType,{
-        username:this.reciver,
-        payload
+        username:username,
+        socketID : this.state.socket.id,
+        payload,
       })
     }
     else
@@ -167,6 +146,11 @@ class App extends Component{
     }
   }
   
+  LoginToogle = (value) => {
+      this.setState({
+        login : value,
+      })
+  }
   createOffer = () => {
     console.log('offer')
     if(!this.pc)
@@ -176,35 +160,24 @@ class App extends Component{
     this.pc.createOffer({offerToReceiveVideo:1,iceRestart: true}).then(sdp => {
       // console.log(JSON.stringify(sdp))
       this.pc.setLocalDescription(sdp).then(() => console.log("local descp added"))
-      this.sendToPeer('offerOrAnswer',sdp)
+      this.sendToPeer('offerOrAnswer',sdp,this.reciver)
       
-      this.sendToPeer('password',this.state.password_client)
+      //this.sendToPeer('password',this.state.password_client)
     })
-    this.setState({
-      password_client : this.makeid(5)
-    })
-    console.log("pass: ",this.state.password_client)
   }
 
   createAnswer = () => {
-    console.log("caller pass: ",this.password)
+    //console.log("caller pass: ",this.password)
     if(!this.pc)
     {
       this.createPc();
     }
-    if(this.password === this.textref)
-    {
-      console.log("Answer")
-      this.pc.createAnswer({offerToReceiveVideo: 1, offerToReceiveAudio: 1,iceRestart:true}).then(sdp => {
-        // console.log(JSON.stringify(sdp)
-        this.sendToPeer('offerOrAnswer', sdp)
-        this.pc.setLocalDescription(sdp).then(this.sendToPeer('accepted-call',''))
-      })
-      
-    }
-    else{
-      console.log("pass dint matchn you entered", this.textref)
-    }
+    console.log("Answer")
+    this.pc.createAnswer({offerToReceiveVideo: 1, offerToReceiveAudio: 1,iceRestart:true}).then(sdp => {
+      // console.log(JSON.stringify(sdp)
+      this.sendToPeer('offerOrAnswer', sdp,this.caller)
+      this.pc.setLocalDescription(sdp).then(this.sendToPeer('accepted-call',''))
+    })
   }
   disconnect = () => {
     // this.sendToPeer('disconnect-call','')
@@ -239,32 +212,42 @@ class App extends Component{
   // }
 
   render(){
-      return (
-        <view className="page">
-          <div className="heading">
-            <h1>Vcallx Video Call</h1>
+      
+        if(this.state.login)
+        {
+          return (
+          <Login socket={this.state.socket} onLogin={this.LoginToogle}/>
+          );
+        }
+        else
+        {
+          return (
+          <view className="page">
+            <div className="heading">
+              <h1>Vcallx Video Call</h1>
+            </div>
+            
+          <div className="videoView">
+            <div className="">
+              <video className="localVideo" ref={this.localVideoref} autoPlay />
+            </div>
+            <div className="">
+              <video className="remoteVideo" ref={this.remoteVideoref} autoPlay />
+            </div>
           </div>
-          <Login socket={this.state.socket}/>
-        <div className="videoView">
-          <div className="">
-            <video className="localVideo" ref={this.localVideoref} autoPlay />
+          <p id="password">{this.state.password_client}</p>
+          <input className="inputArea" placeholder="Enter Username" onChange={(event) => {this.reciver = event.target.value}}/>
+          {/* <input className="inputArea" placeholder="Enter Video Call ID" onChange={(event) => {this.textref = event.target.value}}/> */}
+          <div>
+            <button className="btn" onClick={this.createOffer}>Make Call</button>
+            <button className="btn" onClick={this.createAnswer}>Connect to Call</button>
+            <button className="btn" onClick={() => {this.disconnect(); this.sendToPeer('disconnect-call','')}}>diconnect to Call</button>
           </div>
-          <div className="">
-            <video className="remoteVideo" ref={this.remoteVideoref} autoPlay />
-          </div>
-        </div>
-        <p id="password">{this.state.password_client}</p>
-        <input className="inputArea" placeholder="Enter Username" onChange={(event) => {this.reciver = event.target.value}}/>
-        <input className="inputArea" placeholder="Enter Video Call ID" onChange={(event) => {this.textref = event.target.value}}/>
-        <div>
-          <button className="btn" onClick={this.createOffer}>Make Call</button>
-          <button className="btn" onClick={this.createAnswer}>Connect to Call</button>
-          <button className="btn" onClick={() => {this.disconnect(); this.sendToPeer('disconnect-call','')}}>diconnect to Call</button>
-        </div>
-        {/* <button onClick={this.setRemoteDescription}>set Remote Description</button>
-        <button onClick={this.addCandidate}>Add candidate</button> */}
-        </view>
-      );
+          {/* <button onClick={this.setRemoteDescription}>set Remote Description</button>
+          <button onClick={this.addCandidate}>Add candidate</button> */}
+          </view>
+          );
+        }
   }
 }
 

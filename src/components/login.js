@@ -77,6 +77,7 @@ export default class Login extends Component {
         console.log(email, password, errors);
         console.log(this.props)
         this.props.socket.emit('addUser', {socketID:this.props.socket.id,username: email, password: password});
+        this.props.onLogin(false);
     }
  
     handleChange = (event) => {
