@@ -31,12 +31,37 @@ peers.on('connection', socket => {
    // console.log(peers.connected[])
 
 
+    socket.on('check-user', (data) => {
+        var username = data.username;
+        var password = data.password;
+        var message = "";
+        var isValid = false;
+        if(usernames[username] == null)
+        {
+            isValid = false;
+            message = "user does not exist !";
+        }
+        else{
+            if(passwords[username] ==  password)
+            {
+                isValid = true;
+                message = "login sucessfull!";
+            }
+            else{
+                isValid = false;
+                message = "password is incorrect!";
+            }
+        }
+        peers.sockets[data.socketID].emit('check-user',message,isValid)
+    })
+
 
     socket.on('addUser', (data) => {
         socket.username = data.username;
         socket.password = data.password;
-        passwords[data.password] = data.password;
+        var password = data.password;
         let username  = data.username;
+        passwords[username] = password;
         usernames[username] = data.socketID;
         console.log(usernames)
     })
@@ -48,7 +73,9 @@ peers.on('connection', socket => {
     socket.on('offerOrAnswer', (data) => {
         // send to the oter peers if anyi
        // console.log(`sent sdp to ${data.username}`)
-       let username = data.username;
+        var username = data.username;
+        //var password = data.password;
+        //passwords[username] = password;
         console.log(data)
         peers.sockets[usernames[username]].emit('offerOrAnswer',socket.username,data.payload);
         //peers.connected(

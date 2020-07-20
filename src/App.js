@@ -27,8 +27,6 @@ class App extends Component{
       
   }
   componentDidMount(){
-
-     
     this.state.socket.on('connection-success', success => {
       console.log("success",success)
     })

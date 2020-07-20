@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Form, FormGroup, Label, Input, Fade  } from 'reactstrap';
 import _ from 'lodash';
-import Signup from './signup';
  
 const validationMethods =  {
     required : (field, value) => {
@@ -46,7 +45,7 @@ const runValidationRules  = (element, errors) => {
 }
  
  
-export default class Login extends Component {
+export default class Signup extends Component {
  
     constructor(props) {
         super(props);
@@ -56,24 +55,23 @@ export default class Login extends Component {
             errors: []
         }
     }
+    handleChange = (event) => {
+        const target = event.target;
+        const field =  target.name;
+        const value = target.value
  
+        const errors = runValidationRules(target, this.state.errors);
  
-    componentDidMount(){
-        this.props.socket.on('check-user',(message, value) => {
-            if(value)
-            {
-                this.props.onLogin(false);
-                alert(message);
-            }
-            else
-            {
-                alert(message);
-               // this.props.socket.emit('addUser', {socketID:this.props.socket.id,username: email, password: password});
-            }
-        })
+        this.setState({
+            errors: errors
+        });
+ 
+        this.setState({
+            [field]:  value
+        });
     }
-    login = (event) => {
  
+    signup = (event) => {
         event.preventDefault();
  
         const formElements = validateForm("loginForm");
@@ -90,29 +88,13 @@ export default class Login extends Component {
         const errors =  this.state.errors;
         console.log(email, password, errors);
         //console.log(this.props)
-        this.props.socket.emit('check-user', {socketID:this.props.socket.id,username: email, password: password});
-       
-    }
- 
-    handleChange = (event) => {
-        const target = event.target;
-        const field =  target.name;
-        const value = target.value
- 
-        const errors = runValidationRules(target, this.state.errors);
- 
-        this.setState({
-            errors: errors
-        });
- 
-        this.setState({
-            [field]:  value
-        });
+        this.props.socket.emit('addUser', {socketID:this.props.socket.id,username: email, password: password});
+        this.props.onLogin(false);
     }
     render() {
         return (
             <div className="container">
-                <Form id="loginForm" method="post" onSubmit={this.login}>
+                <Form id="loginForm" method="post" onSubmit={this.signup}>
                     <FormGroup>
                         <Label for="email">Email</Label>
                         <Input
@@ -139,9 +121,8 @@ export default class Login extends Component {
                         />
                         <FromValidationError field={this.state.errors.password} />
                     </FormGroup>
-                    <Button>login</Button>
+                    <Button>signup</Button>
                 </Form>
-                <Signup onLogin={this.props.onLogin} socket={this.props.socket} />
             </div>
         );
     }
