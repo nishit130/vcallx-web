@@ -1,0 +1,25 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 110px;
+  /* background-image: url(../src/background.png); */
+  background-color: black;
+}
+.heading {
+  margin-top: 50px;
+  color: white;
+}
+.inputArea {
+  font-size: 30px;
+  border-radius: 30px;
+}
+#password {
+  font-size: 30px;
+  color: pink;
+}

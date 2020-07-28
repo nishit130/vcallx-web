@@ -1,0 +1,42 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 100%;
+  width: 100%;
+  padding-bottom: 110px;
+  /* background-image: url(../src/background.png); */
+  background-color: black;
+}
+.heading {
+  margin-top: 50px;
+  color: white;
+}
+.btn {
+  margin: 20px;
+  display: inline;
+  background-color: transparent;
+  font-size: 25px;
+  border: 2px solid pink;
+  border-radius: 30px;
+  margin-right: 200;
+}
+.btn:hover {
+  margin: 20px;
+  display: inline;
+  color: white;
+  background-color: black;
+  font-size: 25px;
+  border: 2px solid white;
+  border-radius: 30px;
+}
+.inputArea {
+  font-size: 30px;
+  border-radius: 30px;
+}
+label {
+  color: white;
+}

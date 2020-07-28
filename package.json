@@ -19,7 +19,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "vcallx:build": "nodemon --watch src --exec npm run build",
+    "vcallx:server": "nodemon --watch build node server.js --exec",
+    "vcallx": "npm-run-all --parallel vcallx:*"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,5 +38,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5"
   }
 }
