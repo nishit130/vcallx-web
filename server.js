@@ -46,6 +46,11 @@ peers.on('connection', socket => {
             {
                 isValid = true;
                 message = "login sucessfull!";
+                usernames[username] = data.socketID;
+                socket.username = data.username;
+        	 socket.password = data.password;
+                console.log(usernames)
+                
             }
             else{
                 isValid = false;

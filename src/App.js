@@ -93,7 +93,7 @@ class App extends Component {
   setLocalVideo = () => {
     const constraints = {
       video: true,
-      //audio: true,
+      audio: true,
     };
     navigator.mediaDevices.getUserMedia(constraints).then(
       (stream) => {
@@ -134,7 +134,11 @@ class App extends Component {
       this.createPc();
     }
     this.pc
-      .createOffer({ offerToReceiveVideo: 1, iceRestart: true })
+      .createOffer({
+        offerToReceiveVideo: 1,
+        //offerToReceiveAudio: 1,
+        iceRestart: true,
+      })
       .then((sdp) => {
         // console.log(JSON.stringify(sdp))
         this.pc
@@ -154,7 +158,7 @@ class App extends Component {
     this.pc
       .createAnswer({
         offerToReceiveVideo: 1,
-        offerToReceiveAudio: 1,
+        //offerToReceiveAudio: 1,
         iceRestart: true,
       })
       .then((sdp) => {
