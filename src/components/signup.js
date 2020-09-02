@@ -95,9 +95,9 @@ export default class Signup extends Component {
   render() {
     return (
       <div className='container page'>
+        <h2 className='heading'>Signup</h2>
         <Form id='loginForm' method='post' onSubmit={this.signup}>
           <FormGroup>
-            <Label for='email'>Email</Label>
             <Input
               type='text'
               className='inputArea'
@@ -111,7 +111,6 @@ export default class Signup extends Component {
             <FromValidationError field={this.state.errors.email} />
           </FormGroup>
           <FormGroup>
-            <Label for='password'>Password</Label>
             <Input
               type='password'
               validations={["required"]}

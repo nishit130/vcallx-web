@@ -93,6 +93,8 @@ export default class Login extends Component {
                 placeholder='Enter your password.'
               />
             </div>
+          </div>
+          <div class='button-div'>
             <button onClick={this.submit} className='btn'>
               login
             </button>

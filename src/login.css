@@ -15,6 +15,12 @@
   margin-top: 50px;
   color: white;
 }
+.button-div {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  float: left;
+}
 .btn {
   margin: 20px;
   display: inline;
@@ -22,7 +28,6 @@
   font-size: 25px;
   border: 2px solid pink;
   border-radius: 30px;
-  margin-right: 200;
 }
 .btn:hover {
   margin: 20px;
@@ -36,6 +41,7 @@
 .inputArea {
   font-size: 30px;
   border-radius: 30px;
+  margin: 10px;
 }
 label {
   color: white;

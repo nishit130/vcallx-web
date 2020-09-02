@@ -20,6 +20,7 @@ class App extends Component {
     this.textref = "";
     this.caller = "";
     this.reciver = "";
+    this.isMute = true;
   }
   componentDidMount() {
     this.state.socket.on("connection-success", (success) => {
@@ -136,7 +137,7 @@ class App extends Component {
     this.pc
       .createOffer({
         offerToReceiveVideo: 1,
-        //offerToReceiveAudio: 1,
+        offerToReceiveAudio: 1,
         iceRestart: true,
       })
       .then((sdp) => {
@@ -158,7 +159,7 @@ class App extends Component {
     this.pc
       .createAnswer({
         offerToReceiveVideo: 1,
-        //offerToReceiveAudio: 1,
+        offerToReceiveAudio: 1,
         iceRestart: true,
       })
       .then((sdp) => {
@@ -212,10 +213,14 @@ class App extends Component {
           <div className='heading'>
             <h1>Vcallx Video Call</h1>
           </div>
-
           <div className='videoView'>
             <div className=''>
-              <video className='localVideo' ref={this.localVideoref} autoPlay />
+              <video
+                className='localVideo'
+                ref={this.localVideoref}
+                autoPlay
+                muted
+              />
             </div>
             <div className=''>
               <video
