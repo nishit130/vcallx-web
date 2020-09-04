@@ -52,6 +52,22 @@ export default class Signup extends Component {
       errors: [],
     };
   }
+
+  componentDidMount() {
+    this.props.socket.on("check-user", (value) => {
+      if (value) {
+        this.props.socket.emit("addUser", {
+          socketID: this.props.socket.id,
+          username: this.state.email,
+          password: this.state.password,
+        });
+        this.props.onLogin(false);
+      } else {
+        alert("user with that username already exist!");
+      }
+    });
+  }
+
   handleChange = (event) => {
     const target = event.target;
     const field = target.name;
@@ -84,13 +100,11 @@ export default class Signup extends Component {
     const password = this.state.password;
     const errors = this.state.errors;
     console.log(email, password, errors);
-    //console.log(this.props)
-    this.props.socket.emit("addUser", {
+    this.props.socket.emit("check-user", {
       socketID: this.props.socket.id,
       username: email,
       password: password,
     });
-    this.props.onLogin(false);
   };
   render() {
     return (

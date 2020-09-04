@@ -32,7 +32,7 @@ peers.on("connection", (socket) => {
   connectedPeers.set(socket.id, socket);
   // console.log(peers.connected[])
 
-  socket.on("check-user", (data) => {
+  socket.on("login-user", (data) => {
     var username = data.username;
     var password = data.password;
     var message = "";
@@ -53,7 +53,20 @@ peers.on("connection", (socket) => {
         message = "password is incorrect!";
       }
     }
-    peers.sockets[data.socketID].emit("check-user", message, isValid);
+    peers.sockets[data.socketID].emit("login-user", message, isValid);
+  });
+
+  socket.on("check-user", (data) => {
+    var username = data.username;
+    var password = data.password;
+    var message = "";
+    var isValid = false;
+    if (usernames[username] == null) {
+      isValid = true;
+    } else {
+      isValid = false;
+    }
+    peers.sockets[data.socketID].emit("check-user", isValid);
   });
 
   socket.on("addUser", (data) => {

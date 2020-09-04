@@ -16,7 +16,7 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    this.props.socket.on("check-user", (message, value) => {
+    this.props.socket.on("login-user", (message, value) => {
       if (value) {
         this.props.onLogin(false);
       } else {
@@ -31,7 +31,7 @@ export default class Login extends Component {
     const errors = this.state.errors;
     console.log(email, password, errors);
     //console.log(this.props)
-    this.props.socket.emit("check-user", {
+    this.props.socket.emit("login-user", {
       socketID: this.props.socket.id,
       username: email,
       password: password,
