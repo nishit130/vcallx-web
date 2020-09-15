@@ -8,8 +8,7 @@ var io = require("socket.io").listen(server);
 });
 
 const PORT = process.env.PORT || 8080;
-// io.listen(server)
-// const app = express()
+
 app.use(express.static(__dirname + "/build"));
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/build/index.html");
@@ -17,14 +16,12 @@ app.get("/", (req, res) => {
 server.listen(PORT, () => {
   console.log("Server listening on Port ", PORT);
 });
-// const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
-// io.listen(server)
 
 const peers = io.of("/webrtcPeer");
 let connectedPeers = new Map();
-var usernames = {};
-let passwords = {};
+var usernames = { nishit: "default", jaini: "default" };
+let passwords = { nishit: "patel", jaini: "patel" };
 peers.on("connection", (socket) => {
   console.log(socket.id);
   console.log("connected");
@@ -58,8 +55,6 @@ peers.on("connection", (socket) => {
 
   socket.on("check-user", (data) => {
     var username = data.username;
-    var password = data.password;
-    var message = "";
     var isValid = false;
     if (usernames[username] == null) {
       isValid = true;
@@ -89,20 +84,20 @@ peers.on("connection", (socket) => {
     var username = data.username;
     //var password = data.password;
     //passwords[username] = password;
-    console.log(data);
-    peers.sockets[usernames[username]].emit(
-      "offerOrAnswer",
-      socket.username,
-      data.payload
-    );
-    //peers.connected(
-    //io.to(usernames[data.username]).emit('offerOrAnswer',socket.username,data.payload);
-    // for (const [socketID, socket] of connectedPeers.entries()){
-    //     if(socketID !== data.socketID){
-    //         console.log(socketID,data.payload.type)
-    //         socket.emit('offerOrAnswer',data.payload)
-    //     }
-    // }
+    console.log(data.username);
+    if(usernames[username])
+    {
+      peers.sockets[usernames[username]].emit(
+        "offerOrAnswer",
+        socket.username,
+        data.payload
+      );
+    }
+    else{
+      peers.sockets[data.socketID].emit(
+        "check-user", false
+      );
+    }
   });
   socket.on("candidate", (data) => {
     // send to the oter peers if any

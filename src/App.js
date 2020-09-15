@@ -44,6 +44,12 @@ class App extends Component {
       console.log("diss call");
       //this.disconnect();
     });
+    this.state.socket.on("check-user",(value) =>{
+      if(!value)
+      {
+        alert("no user with username exist!")
+      }
+    })
     this.createPc();
   }
 
@@ -146,7 +152,6 @@ class App extends Component {
           .setLocalDescription(sdp)
           .then(() => console.log("local descp added"));
         this.sendToPeer("offerOrAnswer", sdp, this.reciver);
-
         //this.sendToPeer('password',this.state.password_client)
       });
   };
