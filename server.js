@@ -3,6 +3,7 @@ const { Console } = require("console");
 var app = express();
 var server = require("http").createServer(app);
 var io = require("socket.io").listen(server);
+// eslint-disable-next-line no-unused-expressions
 ({
   path: "/vcallx-web",
 });
@@ -22,6 +23,9 @@ const peers = io.of("/webrtcPeer");
 let connectedPeers = new Map();
 var usernames = { nishit: "default", jaini: "default" };
 let passwords = { nishit: "patel", jaini: "patel" };
+function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value);
+}
 peers.on("connection", (socket) => {
   console.log(socket.id);
   console.log("connected");
@@ -64,6 +68,8 @@ peers.on("connection", (socket) => {
     peers.sockets[data.socketID].emit("check-user", isValid);
   });
 
+ 
+
   socket.on("addUser", (data) => {
     socket.username = data.username;
     socket.password = data.password;
@@ -74,7 +80,10 @@ peers.on("connection", (socket) => {
     console.log(usernames);
   });
   socket.on("disconnect", () => {
-    console.log("disconnected");
+    
+    var username = getKeyByValue(usernames,socket.id);
+    usernames[username] = '0';
+    console.log(username," disconnected");
     connectedPeers.delete(socket.id);
   });
 
@@ -85,17 +94,23 @@ peers.on("connection", (socket) => {
     //var password = data.password;
     //passwords[username] = password;
     console.log(data.username);
-    if(usernames[username])
+    if(usernames[username] === '0')
     {
+      peers.sockets[data.socketID].emit(
+        "check-user", false
+      );
+      console.log('user is not online')
+    }
+    else if(!usernames[username]){
+      peers.sockets[data.socketID].emit(
+        "check-user", false
+      );
+    }
+    else{
       peers.sockets[usernames[username]].emit(
         "offerOrAnswer",
         socket.username,
         data.payload
-      );
-    }
-    else{
-      peers.sockets[data.socketID].emit(
-        "check-user", false
       );
     }
   });
