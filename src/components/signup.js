@@ -54,7 +54,7 @@ export default class Signup extends Component {
   }
 
   componentDidMount() {
-    this.props.socket.on("check-user", (value) => {
+    this.props.socket.on("check-user", (value,message) => {
       if (value) {
         this.props.socket.emit("addUser", {
           socketID: this.props.socket.id,

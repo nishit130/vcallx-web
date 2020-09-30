@@ -44,7 +44,7 @@ class App extends Component {
       console.log("diss call");
       //this.disconnect();
     });
-    this.state.socket.on("check-user",(value) =>{
+    this.state.socket.on("check-user",(value, message) =>{
       if(!value)
       {
         alert("no user with username exist!")

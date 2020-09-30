@@ -21,7 +21,7 @@ server.listen(PORT, () => {
 
 const peers = io.of("/webrtcPeer");
 let connectedPeers = new Map();
-var usernames = { nishit: "default", jaini: "default" };
+var usernames = { nishit: "0", jaini: "0" };
 let passwords = { nishit: "patel", jaini: "patel" };
 function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value);
@@ -60,12 +60,13 @@ peers.on("connection", (socket) => {
   socket.on("check-user", (data) => {
     var username = data.username;
     var isValid = false;
+    var message = ""
     if (usernames[username] == null) {
       isValid = true;
     } else {
       isValid = false;
     }
-    peers.sockets[data.socketID].emit("check-user", isValid);
+    peers.sockets[data.socketID].emit("check-user", isValid,message);
   });
 
  
@@ -97,13 +98,13 @@ peers.on("connection", (socket) => {
     if(usernames[username] === '0')
     {
       peers.sockets[data.socketID].emit(
-        "check-user", false
+        "check-user", false,`${username} is not online`
       );
       console.log('user is not online')
     }
     else if(!usernames[username]){
       peers.sockets[data.socketID].emit(
-        "check-user", false
+        "check-user", false, "user does not exist!"
       );
     }
     else{
