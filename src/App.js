@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import io from "socket.io-client";
 import Login from "../src/components/login";
+import {Helmet} from 'react-helmet'
 class App extends Component {
   constructor(props) {
     super(props);
@@ -51,6 +52,7 @@ class App extends Component {
       }
     })
     this.createPc();
+    // this.disconnect();
   }
 
   handleiceState = (e) => {
@@ -70,14 +72,6 @@ class App extends Component {
   handleTrackEvent = (e) => {
     this.remoteVideoref.current.srcObject = e.streams[0];
   };
-
-  // handleNegotiationNeededEvent = () => {
-  //   this.pc.createOffer().then((offer) => {
-  //     return this.pc.setLocalDescription(offer);
-  //   }).then(() => {
-  //     this.sendToPeer('offerOrAnswer',this.pc.localDescription)
-  //   })
-  // }
   createPc = () => {
     const pc_config = {
       iceServers: [
@@ -134,6 +128,7 @@ class App extends Component {
     this.setState({
       login: value,
     });
+    this.disconnect();
   };
   createOffer = () => {
     console.log("offer");
@@ -200,21 +195,15 @@ class App extends Component {
     this.createPc();
   };
 
-  // addCandidate = () => {
-  //   // const candidate = JSON.parse(this.textref.value)
-  //   // console.log('Adding candidate:', candidate)
-  //   this.candidates.forEach(candidate => {
-  //     console.log(JSON.stringify(candidate))
-  //     this.pc.addIceCandidate(new RTCIceCandidate(candidate))
-  //   })
-  // }
-
   render() {
     if (this.state.login) {
       return <Login socket={this.state.socket} onLogin={this.LoginToogle} />;
     } else {
       return (
         <view className='page'>
+            <Helmet>
+              <title>Vcallx-web</title>
+            </Helmet>
           <div className='heading'>
             <h1>Vcallx Video Call</h1>
           </div>

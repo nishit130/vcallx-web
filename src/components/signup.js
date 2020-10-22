@@ -120,7 +120,7 @@ export default class Signup extends Component {
               value={this.state.email}
               onChange={this.handleChange}
               id='email'
-              placeholder='Enter your email address.'
+              placeholder='Enter your username.'
             />
             <FromValidationError field={this.state.errors.email} />
           </FormGroup>
@@ -137,7 +137,7 @@ export default class Signup extends Component {
             />
             <FromValidationError field={this.state.errors.password} />
           </FormGroup>
-          <Button>signup</Button>
+          <Button className='btn'>signup</Button>
         </Form>
         <p style={{ color: "white" }} onClick={this.props.login}>
           Already have an Account?

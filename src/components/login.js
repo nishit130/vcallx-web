@@ -79,7 +79,7 @@ export default class Login extends Component {
                 onChange={this.handleChange}
                 id='email'
                 className='inputArea'
-                placeholder='Enter your email address.'
+                placeholder='Enter your username.'
               />
             </div>
             <div>
