@@ -16,9 +16,7 @@
     <a href="https://vcallx-web.herokuapp.com/">Live Link</a>
     <p align="center">
       <img href="#how-to-use" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=round-square"
-           alt="PR">
-      <img href="http://hits.dwyl.com/nis130/vcallx-web" src="http://hits.dwyl.com/nis130/vcallx-web.svg"
-           alt="hits">
+           alt="PR"
     </p>
   </p>   
 </p>
